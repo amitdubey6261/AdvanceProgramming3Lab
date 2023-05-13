@@ -1,0 +1,347 @@
+1) Write a program to construct a Binary Search Tree and check by inserting the elements. 25,15, 5,
+20, 40, 3, 6, 16, 21. 2.
+2) Write a program for deleting the elements from the above Binary Search Tree. Check it by deleting
+the elements 25, 40.
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+class Node{
+public:
+int data;
+Node *left;
+Node *right;
+Node(int data){
+this-&gt;data = data;
+this-&gt;left = nullptr;
+this-&gt;right = nullptr;
+}
+};
+class bst{
+public:
+Node *root=NULL;
+void insert(int key){
+Node *newNode = new Node(key);
+Node *temp = this-&gt;root;
+Node *parent = this-&gt;root;
+if(root==nullptr){
+root = newNode;
+return;
+}
+while(temp!=nullptr){
+parent = temp;
+if(temp-&gt;data&gt;key) temp = temp-&gt;left;
+else temp = temp-&gt;right;
+}
+if(parent-&gt;data&gt;key) parent-&gt;left = newNode;
+if(parent-&gt;data&lt;key) parent-&gt;right = newNode;
+}
+void inorder(Node *node){
+if(node==nullptr) return;
+inorder(node-&gt;left);
+cout&lt;&lt;node-&gt;data&lt;&lt;endl;
+inorder(node-&gt;right);
+}
+Node *successor(int key){
+Node *node = searchBst(key);
+if(node==nullptr) return node;
+node = node-&gt;right;
+while(node-&gt;right!=nullptr and node!=nullptr) node = node-&gt;left;
+
+return node;
+}
+Node *deleteNode(Node *&amp;root, int key){
+if (root == NULL)
+return root;
+if (key &lt; root-&gt;data)
+root-&gt;left = deleteNode(root-&gt;left, key);
+else if (key &gt; root-&gt;data)
+root-&gt;right = deleteNode(root-&gt;right, key);
+else{if (root-&gt;left == NULL and root-&gt;right == NULL) //0 child
+
+return NULL;
+else if (root-&gt;left == NULL){ //1 child
+Node *temp = root-&gt;right;
+free(root);
+return temp;
+}
+else if (root-&gt;right == NULL)
+{
+Node *temp = root-&gt;left;
+free(root);
+return temp;
+}
+Node *temp = successor(root-&gt;right-&gt;data); //2 child
+root-&gt;data = temp-&gt;data;
+root-&gt;right = deleteNode(root-&gt;right, temp-&gt;data);
+}
+return root;
+}
+};
+int main(){
+bst obj;
+int n,value,key;
+cin&gt;&gt;n;
+for(int i=0;i&lt;n;i++){
+cin&gt;&gt;value;
+obj.insert(value);
+}
+cout&lt;&lt;&quot;Enter the node to be deleted: &quot;;
+cin&gt;&gt;key;
+obj.root=obj.deleteNode(obj.root,key);
+obj.inorder(obj.root);
+}
+3. Write a program to construct the AVL tree using proper rotations by inserting the elements. Check
+by inserting the elements 5, 10, 15, 20, 15, 40, 45, 80, 90
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+class AVL
+{
+public:
+int data;
+AVL *left;
+
+AVL *right;
+int height;
+AVL(int data)
+{
+this-&gt;data = data;
+left = NULL;
+right = NULL;
+this-&gt;height = 1;
+}
+~AVL()
+{
+delete left;
+delete right;
+}
+};
+int node_height(AVL *node)
+{
+int hl, hr;
+hl = node &amp;&amp; node-&gt;left ? node-&gt;left-&gt;height : 0;
+hr = node &amp;&amp; node-&gt;right ? node-&gt;right-&gt;height : 0;
+return (hl &gt; hr) ? hl + 1 : hr + 1;
+}
+int BalanceFactor(AVL *node)
+{
+int hl, hr;
+hl = node &amp;&amp; node-&gt;left ? node-&gt;left-&gt;height : 0;
+hr = node &amp;&amp; node-&gt;right ? node-&gt;right-&gt;height : 0;
+return hl - hr;
+}
+AVL *LL_rotation(AVL *node)
+{ /// LL rotation function
+AVL *node_lc = node-&gt;left;
+AVL *node_rc = node_lc-&gt;right; // not node-&gt;right
+node_lc-&gt;right = node;
+node-&gt;left = node_rc;
+/// now modify height
+node-&gt;height = node_height(node);
+node_lc-&gt;height = node_height(node_lc);
+return node_lc;
+}
+AVL *LR_rotation(AVL *node)
+{ /// LR rotation function
+AVL *node_lc = node-&gt;left;
+AVL *node_rc = node_lc-&gt;right;
+node_lc-&gt;right = node_rc-&gt;left;
+node-&gt;left = node_rc-&gt;right;
+node_rc-&gt;left = node_lc;
+node_rc-&gt;right = node;
+
+/// now modify heights
+node_lc-&gt;height = node_height(node_lc);
+node-&gt;height = node_height(node);
+node_rc-&gt;height = node_height(node_rc);
+return node_rc;
+}
+AVL *RR_rotation(AVL *node)
+{ /// RR rotation function
+// edited here
+AVL *node_rc = node-&gt;right;
+AVL *node_lc = node_rc-&gt;left;
+node_rc-&gt;left = node;
+node-&gt;right = node_lc;
+/// now modify heights
+node-&gt;height = node_height(node);
+node_rc-&gt;height = node_height(node_rc);
+return node_rc;
+}
+AVL *RL_rotation(AVL *node)
+{ /// RL rotation function
+// edited here
+AVL *node_rc = node-&gt;right;
+AVL *node_lc = node_rc-&gt;left;
+node_rc-&gt;left = node_lc-&gt;right;
+node-&gt;right = node_lc-&gt;left;
+node_lc-&gt;right = node_rc;
+node_lc-&gt;left = node;
+/// now modify heights
+node-&gt;height = node_height(node);
+node_lc-&gt;height = node_height(node_lc);
+node_rc-&gt;height = node_height(node_rc);
+return node_lc;
+}
+void printTree(AVL *root)
+{
+if (root == NULL)
+{ /// base case
+return;
+}
+cout &lt;&lt; root-&gt;data &lt;&lt; &quot;: &quot;;
+if (root-&gt;left != NULL)
+{
+cout &lt;&lt; &quot;L&quot; &lt;&lt; root-&gt;left-&gt;data &lt;&lt; &quot;,&quot;;
+}
+if (root-&gt;right != NULL)
+{
+
+cout &lt;&lt; &quot;R&quot; &lt;&lt; root-&gt;right-&gt;data &lt;&lt; &quot;,&quot;;
+}
+cout &lt;&lt; endl;
+printTree(root-&gt;left);
+printTree(root-&gt;right);
+}
+AVL *insert(AVL *node, int data)
+{
+if (node == NULL)
+{
+AVL *n = new AVL(data);
+return n;
+}
+if (data &lt; node-&gt;data)
+{
+node-&gt;left = insert(node-&gt;left, data);
+}
+else if (data &gt; node-&gt;data)
+{
+node-&gt;right = insert(node-&gt;right, data);
+}
+else
+{
+return node;
+}
+node-&gt;height = node_height(node); /// update height of nodes after insertion
+if (BalanceFactor(node) == 2 &amp;&amp; BalanceFactor(node-&gt;left) == 1)
+{
+/// LL rotation;
+return LL_rotation(node);
+}
+else if (BalanceFactor(node) == 2 &amp;&amp; BalanceFactor(node-&gt;left) == -1)
+{
+/// LR rotation;
+return LR_rotation(node);
+}
+else if (BalanceFactor(node) == -2 &amp;&amp; BalanceFactor(node-&gt;right) == -1)
+{
+/// RR rotation;
+return RR_rotation(node);
+}
+else if (BalanceFactor(node) == -2 &amp;&amp; BalanceFactor(node-&gt;right) == 1)
+{
+/// RL rotation;
+return RL_rotation(node);
+}
+return node;
+}
+AVL *minDataNode(AVL *root)
+{
+if (!root)
+return root;
+
+AVL *temp = root;
+while (temp-&gt;left != NULL)
+{
+temp = temp-&gt;left;
+}
+return temp;
+}
+AVL *deleteData(AVL *node, int data)
+{
+if (node == NULL)
+{
+return NULL;
+}
+if (data &gt; node-&gt;data)
+{
+node-&gt;right = deleteData(node-&gt;right, data);
+}
+else if (data &lt; node-&gt;data)
+{
+node-&gt;left = deleteData(node-&gt;left, data);
+}
+else
+{
+if (node-&gt;left == NULL &amp;&amp; node-&gt;right == NULL)
+{
+delete node;
+return NULL;
+}
+else if (node-&gt;right == NULL)
+{
+AVL *temp = node-&gt;left;
+node-&gt;left = NULL;
+delete node;
+return temp;
+else if (node-&gt;left == NULL)
+{
+AVL *temp = node-&gt;right;
+node-&gt;right = NULL;
+delete node;
+return temp;
+}
+else
+{
+AVL *minNode = node-&gt;right;
+while (minNode-&gt;left != NULL)
+{
+minNode = minNode-&gt;left;
+}
+int rightMin = minNode-&gt;data;
+node-&gt;data = rightMin;
+node-&gt;right = deleteData(node-&gt;right, rightMin); // update node step
+}
+}
+if (node == NULL)
+{
+return node;
+
+}
+node-&gt;height = node_height(node); /// update height of nodes after insertion
+if (BalanceFactor(node) == 2 &amp;&amp; BalanceFactor(node-&gt;left) == 1)
+{
+/// LL rotation;
+return LL_rotation(node);
+}
+else if (BalanceFactor(node) == 2 &amp;&amp; BalanceFactor(node-&gt;left) == -1)
+{
+/// LR rotation;
+return LR_rotation(node);
+}
+else if (BalanceFactor(node) == -2 &amp;&amp; BalanceFactor(node-&gt;right) == -1)
+{
+/// RR rotation;
+return RR_rotation(node);
+}
+else if (BalanceFactor(node) == -2 &amp;&amp; BalanceFactor(node-&gt;right) == 1)
+{
+/// RL rotation;
+return RL_rotation(node);
+}
+return node;
+}
+int main()
+{
+AVL *root = new AVL(10);
+root = insert(root, 90);
+root = insert(root, 50);
+root = insert(root, 70);
+root = insert(root, 28);
+root = insert(root, 19);
+root = insert(root, 65);
+root = insert(root, 57);
+printTree(root);
+root = deleteData(root, 90);
+cout &lt;&lt; endl;
+printTree(root);
+return 0;
+}

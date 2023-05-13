@@ -1,0 +1,126 @@
+1) Last Stone Weight
+class Solution {
+public:
+int lastStoneWeight(vector&lt;int&gt;&amp; stones) {
+priority_queue&lt;int&gt; pq(stones.begin(), stones.end());
+while(pq.size() &gt; 1){
+int y = pq.top();
+pq.pop();
+int x = pq.top();
+pq.pop();
+if(x != y){
+pq.push(y - x);
+}
+}
+if(pq.empty()){
+return 0;
+}else{
+return pq.top();
+}
+}
+};
+2) Top K Frequent Elements
+class Solution {
+public:
+vector&lt;int&gt; topKFrequent(vector&lt;int&gt;&amp; nums, int k)
+{
+priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int,int&gt;&gt;, greater&lt;pair&lt;int,int&gt;&gt;&gt; pq;
+unordered_map&lt;int,int&gt; mp;
+for(auto it:nums)
+mp[it]++;
+for(auto it:mp)
+{
+pq.push({it.second, it.first});
+if(pq.size()&gt;k)
+pq.pop();
+}
+vector&lt;int&gt; ans;
+while(!pq.empty())
+{
+ans.push_back(pq.top().second);
+pq.pop();
+}
+return ans;
+}
+};
+4) Haunted
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+
+map&lt;int,int&gt; mp;
+int a[100100]={0};
+int main()
+{
+priority_queue&lt;pair&lt;int,int&gt; &gt;P;
+int n,i,x,m;
+int k=0;
+scanf(&quot;%d %d&quot;,&amp;n,&amp;m);
+for(i=0;i&lt;n;i++)
+{
+scanf(&quot;%d&quot;,&amp;x);
+if(mp.count(x)==0)
+{
+mp[x]=k;
+a[k]++;
+k++;
+}
+else
+{
+a[mp[x]]++;
+}
+P.push(make_pair(a[mp[x]],x));
+printf(&quot;%d %d\n&quot;,P.top().second,P.top().first);
+}
+return(0);
+}
+6) Jesse and Cookie
+#include&lt;bits/stdc++.h&gt;
+using namespace std;
+int main()
+{
+#define int long long
+int n,k;
+cin&gt;&gt;n&gt;&gt;k;
+priority_queue&lt;int, std::vector&lt;int&gt;, std::greater&lt;int&gt; &gt; pq;
+for(int i=0;i&lt;n;i++)
+{
+int val;
+cin&gt;&gt;val;
+pq.push(val);
+}
+int count=0;
+bool ans=true;
+while(1)
+{
+if(pq.empty())
+{
+ans=false;
+break;
+}
+int a1=pq.top();
+pq.pop();
+
+if(a1&gt;=k)
+{
+break;
+}
+if(pq.empty())
+{
+if(a1&lt;k)
+{
+ans=false;
+}
+break;
+}
+int a2=pq.top();
+pq.pop();
+int nv=a1+2*a2;
+count++;
+pq.push(nv);
+}
+if(ans)
+cout&lt;&lt;count;
+else
+cout&lt;&lt;&quot;-1&quot;;
+cout&lt;&lt;endl;
+}

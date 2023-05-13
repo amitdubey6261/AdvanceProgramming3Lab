@@ -1,0 +1,311 @@
+1) Make a Binomial Heal by inserting a sequence of elements taken from the user.
+struct Node
+{
+int data, degree;
+Node *child, *sibling, *parent;
+};
+Node* newNode(int key)
+{
+Node *temp = new Node; temp-&gt;data = key; temp-&gt;degree = 0;
+temp-&gt;child = temp-&gt;parent = temp-&gt;sibling = nullptr; return temp;
+}
+Node* mergeBinomialTrees(Node *b1, Node *b2)
+{
+if (b1-&gt;data &gt; b2-&gt;data)
+swap(b1, b2);
+b2-&gt;parent = b1; b2-&gt;sibling = b1-&gt;child; b1-&gt;child = b2; b1-&gt;degree++;
+return b1;
+}
+list&lt;Node*&gt; unionBionomialHeap(list&lt;Node*&gt; l1,list&lt;Node*&gt; l2)
+{
+list&lt;Node*&gt; _new; list&lt;Node*&gt;::iterator it = l1.begin();
+list&lt;Node*&gt;::iterator ot = l2.begin();
+while (it!=l1.end() &amp;&amp; ot!=l2.end())
+{
+if((*it)-&gt;degree &lt;= (*ot)-&gt;degree)
+{
+_new.push_back(*it);it++;
+}
+else
+{
+_new.push_back(*ot);ot++;
+}
+}
+while (it != l1.end())
+{
+_new.push_back(*it);it++;
+}
+while (ot!=l2.end())
+{
+_new.push_back(*ot);ot++;
+}
+return _new;
+}
+list&lt;Node*&gt; adjust(list&lt;Node*&gt; _heap)
+{
+
+if (_heap.size() &lt;= 1)
+return _heap;
+list&lt;Node*&gt; new_heap;
+list&lt;Node*&gt;::iterator it1,it2,it3;
+it1 = it2 = it3 = _heap.begin();
+if (_heap.size() == 2)
+{
+it2 = it1;it2++;
+it3 = _heap.end();
+}
+else
+{
+it2++;it3=it2;it3++;
+}
+while (it1 != _heap.end())
+{
+if (it2 == _heap.end())
+it1++;
+else if ((*it1)-&gt;degree &lt; (*it2)-&gt;degree)
+{
+it1++;it2++;
+if(it3!=_heap.end())
+it3++;
+}
+else if (it3!=_heap.end() &amp;&amp;(*it1)-&gt;degree == (*it2)-&gt;degree &amp;&amp; (*it1)-&gt;degree == (*it3)-
+&gt;degree)
+{
+it1++;it2++;it3++;
+}
+else if ((*it1)-&gt;degree == (*it2)-&gt;degree)
+{
+Node *temp;
+*it1 = mergeBinomialTrees(*it1,*it2);
+it2 = _heap.erase(it2);
+if(it3 != _heap.end())
+it3++;
+}
+}
+return _heap;
+}
+list&lt;Node*&gt; insertATreeInHeap(list&lt;Node*&gt; _heap,Node *tree)
+{
+list&lt;Node*&gt; temp;
+temp.push_back(tree); temp = unionBionomialHeap(_heap,temp);
+return adjust(temp);
+}
+list&lt;Node*&gt; removeMinFromTreeReturnBHeap(Node *tree)
+{
+list&lt;Node*&gt; heap; Node *temp = tree-&gt;child;
+Node *lo;
+
+while (temp)
+{
+lo = temp;
+temp = temp-&gt;sibling; lo-&gt;sibling = NULL;
+heap.push_front(lo);
+}
+return heap;
+}
+list&lt;Node*&gt; insert(list&lt;Node*&gt; _head, int key)
+{
+Node *temp = newNode(key);
+return insertATreeInHeap(_head,temp);
+}
+Node* getMin(list&lt;Node*&gt; _heap)
+{
+list&lt;Node*&gt;::iterator it = _heap.begin(); Node *temp = *it; while (it != _heap.end())
+{
+if ((*it)-&gt;data &lt; temp-&gt;data)
+temp = *it;
+it++;
+}
+return temp;
+}
+list&lt;Node*&gt; extractMin(list&lt;Node*&gt; _heap)
+{
+list&lt;Node*&gt; new_heap,lo;
+Node *temp;
+temp = getMin(_heap); list&lt;Node*&gt;::iterator it; it = _heap.begin();
+while (it != _heap.end())
+{
+if (*it != temp)
+{
+new_heap.push_back(*it);
+}
+it++;
+}
+lo = removeMinFromTreeReturnBHeap(temp);new_heap = unionBionomialHeap(new_heap,lo);new_heap
+= adjust(new_heap);
+return new_heap;
+}
+void printTree(Node *h)
+{
+while (h)
+{
+cout &lt;&lt; h-&gt;data &lt;&lt; &quot; &quot;;
+printTree(h-&gt;child); h = h-&gt;sibling;
+}
+}
+void printHeap(list&lt;Node*&gt; _heap)
+{
+
+list&lt;Node*&gt; ::iterator it; it = _heap.begin();
+while (it != _heap.end())
+{
+printTree(*it); it++;
+}
+}
+int main()
+{
+int ch,key; list&lt;Node*&gt; _heap;
+_heap = insert(_heap,10); _heap = insert(_heap,20); _heap = insert(_heap,30);
+cout &lt;&lt; &quot;Heap elements after insertion:\n&quot;; printHeap(_heap);
+Node *temp = getMin(_heap); cout &lt;&lt; &quot;\nMinimum element of heap &quot; &lt;&lt; temp-&gt;data &lt;&lt; &quot;\n&quot;;
+_heap = extractMin(_heap); cout &lt;&lt; &quot;Heap after deletion of minimum element\n&quot;; printHeap(_heap);
+return 0;
+}
+2) Merge two Binomial Heaps.
+void merge(BinomialHeap h1)
+{
+NodePtr curr1 = getHead();
+NodePtr curr2 = h1.getHead();
+NodePtr curr3 = nullptr;NodePtr temp = nullptr;
+if (curr1-&gt;degree &lt;= curr2-&gt;degree)
+{
+curr3 = curr1;
+curr1 = curr1-&gt;sibling;
+}
+else
+{
+curr3 = curr2;
+curr2 = curr2-&gt;sibling;
+}
+temp = curr3;
+while(curr1 != nullptr &amp;&amp; curr2 != nullptr)
+{
+if (curr1-&gt;degree &lt;= curr2-&gt;degree)
+{
+curr3-&gt;sibling = curr1;
+curr1 = curr1-&gt;sibling;
+}
+else
+{
+curr3-&gt;sibling = curr2;
+curr2 = curr2-&gt;sibling;
+}
+curr3 = curr3-&gt;sibling;
+}
+if (curr1 != nullptr)
+{
+while(curr1 != nullptr)
+{
+curr3-&gt;sibling = curr1;
+curr1 = curr1-&gt;sibling;
+
+curr3 = curr3-&gt;sibling;
+}
+}
+if (curr2 != nullptr)
+{
+while(curr2 != nullptr)
+{
+curr3-&gt;sibling = curr2;
+curr2 = curr2-&gt;sibling;
+curr3 = curr3-&gt;sibling;
+}
+}
+curr3 = temp;
+NodePtr prev = nullptr;
+NodePtr next = curr3-&gt;sibling;
+while (next != nullptr)
+{
+if ((curr3-&gt;degree != next-&gt;degree )|| (next-&gt;sibling != nullptr &amp;&amp; curr3-&gt;degree == next-&gt;sibling-
+&gt;degree))
+{
+prev = curr3;curr3 = next;
+}
+else
+{
+if (curr3-&gt;data &lt;= next-&gt;data)
+{
+curr3-&gt;sibling = next-&gt;sibling;
+BinomialHeap::linkBinomialTrees(curr3, next);
+}
+else
+{
+if (prev == nullptr)
+{
+temp = next;
+}
+else
+{
+prev-&gt;sibling = next;
+}
+BinomialHeap::linkBinomialTrees(next, curr3);
+curr3 = next;
+}
+}
+next = curr3-&gt;sibling;
+}
+setHead(temp);
+}
+3) Delete the smallest element in the Binomial Heap.
+NodePtr deleteMin()
+{
+NodePtr curr = head;
+NodePtr prevMin = nullptr;
+NodePtr minPtr = nullptr;
+
+NodePtr prevPtr = nullptr;
+int min = 999999;
+while (curr != nullptr)
+{
+if (curr-&gt;data &lt;= min)
+{
+min = curr-&gt;data;
+prevMin = prevPtr;
+minPtr = curr;
+}
+prevPtr = curr;
+curr = curr-&gt;sibling;
+}
+if (prevMin != nullptr &amp;&amp; minPtr-&gt;sibling != nullptr)
+{
+prevMin-&gt;sibling = minPtr-&gt;sibling;
+}
+else if (prevMin != nullptr &amp;&amp; minPtr-&gt;sibling == nullptr)
+{
+prevMin-&gt;sibling = nullptr;
+}
+else if(prevMin == nullptr and minPtr-&gt;sibling != nullptr)
+{
+head = minPtr-&gt;sibling;
+}
+else if(prevMin == nullptr and minPtr-&gt;sibling == nullptr)
+{
+head = nullptr;
+}
+NodePtr childPtr = minPtr-&gt;child;
+while (childPtr != nullptr)
+{
+childPtr-&gt;p = nullptr;
+childPtr = childPtr-&gt;sibling;
+}
+stack&lt;NodePtr&gt; s;
+childPtr = minPtr-&gt;child;
+while (childPtr != nullptr)
+{
+s.push(childPtr);
+childPtr = childPtr-&gt;sibling;
+}
+curr = s.top();
+NodePtr temp = curr;
+s.pop();
+while (!s.empty())
+{
+curr-&gt;sibling = s.top();
+s.pop();
+curr = curr-&gt;sibling;
+}
+curr-&gt;sibling = nullptr;
+BinomialHeap h;
+h.setHead(temp);
+merge(h);
+return minPtr;

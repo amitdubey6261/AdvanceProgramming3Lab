@@ -1,0 +1,146 @@
+1) Write a program to construct a Red Black Tree using sequence of insertions. Elements should be taken
+from the user. You should also print the resultant tree after every insertion.
+2) Write a program to delete the element from a given red black tree. You also print the leftover Red
+Black Tree.
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+enum Color {RED, BLACK};
+struct Node{
+int data;
+bool color;
+Node *left, *right, *parent;
+Node(int data){
+this-&gt;data = data;
+left = NULL, right = NULL, parent = NULL;
+color = RED;
+}
+};
+void left_rotation(Node *&amp;root, Node *&amp;x){
+Node *y = x-&gt;right;
+x-&gt;right = y-&gt;left;
+if (x-&gt;right != NULL){
+x-&gt;right-&gt;parent = x;
+}
+y-&gt;parent = x-&gt;parent;
+if (x-&gt;parent == NULL){
+root = y;
+}
+else if (x == x-&gt;parent-&gt;left){
+x-&gt;parent-&gt;left = y;
+}
+else{
+x-&gt;parent-&gt;right = y;
+}
+y-&gt;left = x;
+x-&gt;parent = y;
+}
+void right_roation(Node *&amp;root, Node *&amp;x){
+Node *y = x-&gt;left;
+x-&gt;left = y-&gt;right;
+if (x-&gt;left != NULL){
+x-&gt;left-&gt;parent = x;
+}
+y-&gt;parent = x-&gt;parent;
+if (x-&gt;parent == NULL){
+root = y;
+}
+else if (x == x-&gt;parent-&gt;left){
+x-&gt;parent-&gt;left = y;
+
+}
+else{
+x-&gt;parent-&gt;right = y;
+}
+y-&gt;right = x;
+x-&gt;parent = y;
+}
+void case_1(Node *&amp;parent,Node *&amp;grandparent,Node *&amp;y,Node *&amp;z){
+grandparent-&gt;color = RED;
+parent-&gt;color = BLACK;
+y-&gt;color = BLACK;
+z = grandparent;
+}
+void insert_fixup(Node *&amp;root, Node *&amp;z){
+Node *parent = NULL ,*y = NULL , *grandparent = NULL;
+while ((z != root) &amp;&amp; (z-&gt;color != BLACK) &amp;&amp; (z-&gt;parent-&gt;color == RED)){
+parent = z-&gt;parent;
+grandparent = z-&gt;parent-&gt;parent;
+if (parent == grandparent-&gt;left){
+y = grandparent-&gt;right;
+if (y != NULL &amp;&amp; y-&gt;color ==RED){
+case_1(parent,grandparent,y,z);
+}
+else{
+if (z == parent-&gt;right){
+left_rotation(root, parent);
+z = parent;
+parent = z-&gt;parent;
+}
+right_roation(root, grandparent);
+swap(parent-&gt;color,grandparent-&gt;color);
+z = parent;
+}
+}
+else{
+Node *y = grandparent-&gt;left;
+if ((y != NULL) &amp;&amp; (y-&gt;color ==RED)){
+case_1(parent,grandparent,y,z);
+}
+else{
+if (z == parent-&gt;left){
+right_roation(root, parent);
+z = parent;
+parent = z-&gt;parent;
+}
+left_rotation(root, grandparent);
+swap(parent-&gt;color, grandparent-&gt;color);
+z = parent;
+}
+}
+}
+
+root-&gt;color = BLACK;
+}
+void insert(Node *&amp;root,int x){
+Node *newNode = new Node(x);
+Node *temp = root;
+Node *parent = root;
+if (root == NULL){
+root = newNode;
+return;
+}
+while (temp != NULL){
+parent = temp;
+if (temp-&gt;data &gt; x)
+temp = temp-&gt;left;
+else
+temp = temp-&gt;right;
+}
+if (parent-&gt;data &gt; x)
+parent-&gt;left = newNode;
+if (parent-&gt;data &lt; x)
+parent-&gt;right = newNode;
+insert_fixup(root, newNode);
+}
+void inorder(Node *root){
+if (root == NULL)
+return;
+inorder(root-&gt;left);
+cout &lt;&lt; root-&gt;data &lt;&lt; &quot; &quot;;
+inorder(root-&gt;right);
+}
+int main(){
+int n,x;
+cin&gt;&gt;n;
+Node *root =NULL;
+insert(root,7);
+insert(root,6);
+insert(root,5);
+insert(root,4);
+insert(root,3);
+insert(root,2);
+insert(root,1);
+cout&lt;&lt;&quot;RB Tree is : &quot;;
+inorder(root);
+return 0;
+}

@@ -1,0 +1,161 @@
+1) Maze Problem
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+void rec(vector&lt;vector&lt;int&gt;&gt; &amp;grid, vector&lt;vector&lt;int&gt;&gt; &amp;vis, vector&lt;string&gt; &amp;ans, string str, int x, int y)
+{
+int n = grid.size(), m = grid[0].size();
+if(x==n-1 &amp;&amp; y==m-1)
+{
+ans.push_back(str);
+return;
+}
+int dx[]={-1,1,0,0};
+int dy[]={0,0,-1,1};
+for(int i=0;i&lt;4;i++)
+{
+int new_x = x+dx[i];
+int new_y = y+dy[i];
+if(new_x&gt;=0 &amp;&amp; new_y&gt;=0 &amp;&amp; new_x&lt;n &amp;&amp; new_y&lt;m &amp;&amp; grid[new_x][new_y]==1 &amp;&amp;
+vis[new_x][new_y]==0)
+{
+vis[new_x][new_y] = 1;
+if(i==0)
+str.push_back(&#39;U&#39;);
+else if(i==1)
+str.push_back(&#39;D&#39;);
+else if(i==2)
+str.push_back(&#39;L&#39;);
+else
+str.push_back(&#39;R&#39;);
+}
+rec(grid, vis, ans, str, new_x, new_y);
+vis[new_x][new_y] = 0;
+str.pop_back();
+}
+}
+int main()
+{
+vector&lt;string&gt;ans; int n;
+cin&gt;&gt;n;
+vector&lt;vector&lt;int&gt;&gt; vis(n,vector&lt;int&gt;(n,0)), grid(n, vector&lt;int&gt;(n,0));
+for(int i=0;i&lt;n;i++)
+{
+for(int j=0;j&lt;n;j++)
+{
+cin&gt;&gt;grid[i][j];
+rec(grid, vis, ans, &quot;&quot;, 0, 0);
+if(ans.size()==0)
+cout&lt;&lt;-1&lt;&lt;endl;
+else for(auto it: ans)
+
+cout&lt;&lt;it&lt;&lt;&quot; &quot;;
+return 0;
+}
+}
+}
+2) Permutation of String
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+void rec(vector&lt;int&gt; &amp;vis, vector&lt;string&gt; &amp;ans, string str, string s)
+{
+if(str.size()==s.size())
+{
+ans.push_back(str);
+return;
+}
+for(int i=0;i&lt;s.size();i++)
+{
+if(vis[i]==0)
+{
+vis[i]-1;
+str.push_back(s[i]);
+rec(vis,ans,str,s);
+str.pop_back();
+}
+vis[i]=0;
+}
+}
+int main()
+{
+vector&lt;string&gt;ans;
+string s = &quot;abc&quot;;
+vector&lt;int&gt; vis(s.length(),0);
+rec(vis, ans, &quot;&quot;, s);
+for(auto it: ans)
+cout&lt;&lt;it&lt;&lt;&quot; &quot;;
+return 0;
+}
+Output:
+
+3) N- queen problem
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+vector&lt;vector&lt;string&gt; &gt; answer;
+void print_board()
+{
+
+for (auto&amp; str : answer[1]) {
+for (auto&amp; letter : str)
+cout &lt;&lt; letter &lt;&lt; &quot; &quot;;
+cout &lt;&lt; endl;
+}
+return;
+}
+int safe(int row, int col, vector&lt;string&gt;&amp; board)
+{
+for (int i = 0; i &lt; board.size(); i++) {
+if (board[i][col] == &#39;Q&#39;)
+return false;
+
+}
+int i = row, j = col;
+while (i &gt;= 0 &amp;&amp; j &gt;= 0)
+if (board[i--][j--] == &#39;Q&#39;)
+return false;
+
+i = row, j = col;
+while (i &gt;= 0 &amp;&amp; j &lt; board.size())
+if (board[i--][j++] == &#39;Q&#39;)
+return false;
+
+return true;
+}
+void rec(vector&lt;string&gt; board, int row)
+{
+if (row == board.size()) {
+answer.push_back(board);
+return;
+}
+for (int i = 0; i &lt; board.size(); i++) {
+if (safe(row, i, board)) {
+board[row][i] = &#39;Q&#39;;
+rec(board, row + 1);
+board[row][i] = &#39;.&#39;;
+}
+}
+return;
+}
+vector&lt;vector&lt;string&gt; &gt; solveNQueens(int n)
+{
+string s;
+for (int i = 0; i &lt; n; i++)
+s += &#39;.&#39;;
+vector&lt;string&gt; board(n, s);
+rec(board, 0);
+return answer;
+}
+int main()
+{
+clock_t start, end;
+start = clock();
+cout &lt;&lt; solveNQueens(4).size() &lt;&lt; endl;
+end = clock();
+
+double time_taken
+= double(end - start) / double(CLOCKS_PER_SEC);
+cout &lt;&lt; time_taken &lt;&lt; &quot; time was taken(in miliseconds)&quot;
+&lt;&lt; endl;
+cout &lt;&lt; &quot;Out of &quot; &lt;&lt; answer.size()
+&lt;&lt; &quot; solutions one is following&quot; &lt;&lt; endl;
+print_board();
+}

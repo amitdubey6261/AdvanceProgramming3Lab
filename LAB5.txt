@@ -1,0 +1,154 @@
+1) Suppose you are standing in front of CL1 and you need to find the path to CR
+#include &lt;iostream&gt;
+using namespace std;
+int main ()
+{
+const int FLOOR1 = 15;
+const int FLOOR2 = 15;
+const int STAIRS = 5;
+int building[FLOOR1 + FLOOR2][STAIRS];
+for (int i = 0; i &lt; FLOOR1; i++)
+{
+for (int j = 0; j &lt; STAIRS; j++)
+{
+building[i][j] = i * STAIRS + j + 1;
+}
+}
+for (int i = FLOOR1; i &lt; FLOOR1 + FLOOR2; i++)
+{
+for (int j = 0; j &lt; STAIRS; j++)
+{
+building[i][j] = (i-FLOOR1)*STAIRS + j + FLOOR1 + 1;
+}
+}
+int start, end;
+cout &lt;&lt; &quot;Enter starting CR number: &quot;; cin &gt;&gt; start;
+cout &lt;&lt; &quot;Enter ending CR number: &quot;; cin &gt;&gt; end;
+int current = start;
+bool takeStairs = (start &lt;= STAIRS &amp;&amp; end &gt; STAIRS) || (start &gt; STAIRS &amp;&amp; end &lt;= STAIRS);
+cout &lt;&lt; &quot;Path: &quot; &lt;&lt; current;
+while (current != end)
+{
+if (takeStairs)
+{
+if (current &lt;= STAIRS)
+{
+cout &lt;&lt; &quot; -&gt; Take stairs to second floor -&gt; &quot; &lt;&lt; building[FLOOR1][0];
+current = building[FLOOR1][0];
+}
+else
+{
+cout &lt;&lt; &quot; -&gt; Take stairs to first floor -&gt; &quot; &lt;&lt; building[0][0];
+current = building[0][0];
+}
+takeStairs = false;
+}
+else if (current &lt; end)
+{
+
+if (current == STAIRS)
+{
+takeStairs = true;
+}
+else
+{
+int row = (current-1) / STAIRS;
+int col = (current-1) % STAIRS;
+if (col == STAIRS-1)
+{
+row++;col = 0;
+}
+else
+{
+col++;
+}
+current = building[row][col];
+cout &lt;&lt; &quot; -&gt; &quot; &lt;&lt; current;
+}
+}
+else
+{
+if (current == STAIRS+1)
+{
+takeStairs = true;
+}
+else
+{
+int row = (current-1) / STAIRS;
+int col = (current-1) % STAIRS;
+if (col == 0)
+{
+row--;
+col = STAIRS-1;
+}
+else
+{
+col--;
+}
+current = building[row][col];
+cout &lt;&lt; &quot; -&gt; &quot; &lt;&lt; current;
+}
+}
+}
+cout &lt;&lt; endl;
+return 0;
+}
+Output:
+
+2) In the previous problem find all the CRs in JUET.
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+int main()
+{
+const int numFloors = 2;
+const int crPerFloor = 15;
+int crNum = 1;
+int crCount[numFloors] = {0};
+for (int floor = 1; floor &lt;= numFloors; floor++)
+{
+for (int i = 1; i &lt;= crPerFloor; i++)
+{
+crCount[floor-1]++;
+crNum++;
+}
+}
+cout &lt;&lt; &quot;Total number of CRs on first floor: &quot; &lt;&lt; crCount[0] &lt;&lt; endl;
+cout &lt;&lt; &quot;Total number of CRs on second floor: &quot; &lt;&lt; crCount[1] &lt;&lt; endl;
+return 0;
+}
+Output:
+
+3) Find 4 CRs whose sum is 56.
+#include &lt;iostream&gt;
+using namespace std;
+int main()
+{
+const int numCRs = 30;
+int crSum = 56;
+bool found = false;
+for (int i = 1; i &lt;= numCRs-3; i++)
+{
+for (int j = i+1; j &lt;= numCRs-2; j++)
+{
+for (int k = j+1; k &lt;= numCRs-1; k++)
+{
+for (int l = k+1; l &lt;= numCRs; l++)
+{
+
+if (i+j+k+l == crSum)
+{
+cout &lt;&lt; &quot;The CRs whose sum is &quot; &lt;&lt; crSum &lt;&lt; &quot; are:&quot; &lt;&lt; i &lt;&lt; &quot;, &quot; &lt;&lt; j &lt;&lt; &quot;, &quot; &lt;&lt; k &lt;&lt; &quot;, &quot; &lt;&lt; l
+&lt;&lt; endl;
+found = true;
+}
+}
+}
+}
+}
+if (!found)
+{
+cout &lt;&lt; &quot;No combination of 4 CRs adds up to &quot; &lt;&lt; crSum &lt;&lt; endl;
+}
+return 0;
+}
+Output:
